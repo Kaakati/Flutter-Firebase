@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        appBar: _navBar(context, 'Login'),
+        appBar: _navBar(context, _formType == FormType.login ? 'Login' : 'Register'),
         body: Container(
           child: SafeArea(
             minimum: const EdgeInsets.all(16),
