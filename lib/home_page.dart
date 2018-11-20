@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutteruitutorial1/auth_provider.dart';
 
+enum HomePageType {
+  list,
+  ongoing,
+  completed,
+  more
+}
+
 class HomePage extends StatefulWidget {
   HomePage({this.onSignedOut});
   final VoidCallback onSignedOut;
@@ -20,15 +27,45 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  HomePageType _homePageType = HomePageType.list;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Welcome'),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text('Logout',
+                style: new TextStyle(fontSize: 17.0, color: Colors.white)),
+            onPressed: () => widget._signOut(context),
+          )
+        ],
+      ),
+      body: new Center(
+        child: _buildNewBody(context)
+      ),
       bottomNavigationBar: new BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: widget._bottomNavBarIndex,
         onTap: (int index) {
           setState(() {
             widget._bottomNavBarIndex = index;
+            switch (index) {
+              case 0:
+                _homePageType = HomePageType.list;
+                break;
+              case 1:
+                _homePageType = HomePageType.ongoing;
+                break;
+              case 2:
+                _homePageType = HomePageType.completed;
+                break;
+              case 3:
+                _homePageType = HomePageType.more;
+                break;
+            }
           });
         },
         items: [
@@ -47,25 +84,31 @@ class _HomePageState extends State<HomePage> {
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.more_horiz, color: Colors.grey),
-              title: Text('Settings', style: TextStyle(color: Colors.grey)),
+              title: Text('More', style: TextStyle(color: Colors.grey)),
               activeIcon: Icon(Icons.more_horiz, color: Colors.blue))
         ],
       ),
-      appBar: new AppBar(
-        title: new Text('Welcome'),
-        actions: <Widget>[
-          new FlatButton(
-            child: new Text('Logout',
-                style: new TextStyle(fontSize: 17.0, color: Colors.white)),
-            onPressed: () => widget._signOut(context),
-          )
-        ],
-      ),
-      body: new Center(
-        child: new Container(
-          child: new Text('Home Page'),
-        ),
-      ),
     );
+  }
+
+  Widget _buildNewBody(BuildContext context) {
+    switch (_homePageType) {
+      case HomePageType.list:
+        return new Container(
+            child: new Text('List Tab'),
+        );
+      case HomePageType.ongoing:
+        return new Container(
+            child: new Text('Ongoing Tab'),
+        );
+      case HomePageType.completed:
+        return new Container(
+            child: new Text('Completed Tab'),
+        );
+      case HomePageType.more:
+        return new Container(
+            child: new Text('More Tab'),
+        );
+    }
   }
 }
