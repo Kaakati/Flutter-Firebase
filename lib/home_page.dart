@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutteruitutorial1/auth_provider.dart';
 
-enum HomePageType {
-  list,
-  ongoing,
-  completed,
-  more
-}
+enum HomePageType { list, ongoing, completed, more }
 
 class HomePage extends StatefulWidget {
   HomePage({this.onSignedOut});
   final VoidCallback onSignedOut;
-  int _bottomNavBarIndex = 0;
 
   void _signOut(BuildContext context) async {
     try {
@@ -27,14 +21,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   HomePageType _homePageType = HomePageType.list;
+  int _bottomNavBarIndex = 0;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    this._homePageType = HomePageType.list;
+  }
+  
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Welcome'),
+        title: _buildNewTitle(context),
         actions: <Widget>[
           new FlatButton(
             child: new Text('Logout',
@@ -43,15 +44,13 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: new Center(
-        child: _buildNewBody(context)
-      ),
+      body: new Center(child: _buildNewBody(context)),
       bottomNavigationBar: new BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        currentIndex: widget._bottomNavBarIndex,
+        currentIndex: _bottomNavBarIndex,
         onTap: (int index) {
           setState(() {
-            widget._bottomNavBarIndex = index;
+            _bottomNavBarIndex = index;
             switch (index) {
               case 0:
                 _homePageType = HomePageType.list;
@@ -91,23 +90,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Widget _buildNewTitle(BuildContext context) {
+    switch (_homePageType) {
+      case HomePageType.list:
+        return new Text('List');
+      case HomePageType.ongoing:
+        return new Text('Ongoing');
+      case HomePageType.completed:
+        return new Text('Completed');
+      case HomePageType.more:
+        return new Text('More');
+    }
+  }
+
   Widget _buildNewBody(BuildContext context) {
     switch (_homePageType) {
       case HomePageType.list:
         return new Container(
-            child: new Text('List Tab'),
+          child: new Text('List Tab'),
         );
       case HomePageType.ongoing:
         return new Container(
-            child: new Text('Ongoing Tab'),
+          child: new Text('Ongoing Tab'),
         );
       case HomePageType.completed:
         return new Container(
-            child: new Text('Completed Tab'),
+          child: new Text('Completed Tab'),
         );
       case HomePageType.more:
         return new Container(
-            child: new Text('More Tab'),
+          child: new Text('More Tab'),
         );
     }
   }
