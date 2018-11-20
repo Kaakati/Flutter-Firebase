@@ -15,13 +15,12 @@ class _RootPageState extends State<RootPage> {
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
     var auth = AuthProvider.of(context).auth;
 
     auth.currentUser().then((userId) {
       setState(() {
-        // authStatus = userId == null ? AuthStates.notSignedIn : AuthStates.signedIn;
+        authStatus = userId == null ? AuthStates.notSignedIn : AuthStates.signedIn;
       });
     });
   }
