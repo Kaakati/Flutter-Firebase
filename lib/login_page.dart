@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'auth.dart';
 
 class LoginPage extends StatefulWidget {
+
+  final BaseAuth auth;
+  LoginPage({this.auth, this.onSignedIn});
+
+  final VoidCallback onSignedIn;
+
   @override
   State<StatefulWidget> createState() => new _LoginPageState();
 }
@@ -27,16 +33,18 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Firebase Logic
   void validateAndSubmit() async {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.login) {
-          FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: this._email, password: this._password);
-          print('Signed User ID: ${user.uid}');
+          String userID = await widget.auth.signInWithEmailAndPassword(this._email, this._password);
+          print('Signed User ID: ${userID}');
         } else {
-          FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: this._email, password: this._password);
-          print('Registered User ID: ${user.uid}');
+          String userID = await widget.auth.createUserWithEmailAndPassword(this._email, this._password);
+          print('Signed User ID: ${userID}');
         }
+        widget.onSignedIn();
       } catch (e) {
         print('Error: $e');
       }
@@ -63,17 +71,20 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Container(
       child: Scaffold(
-        appBar: _navBar(context, _formType == FormType.login ? 'Login' : 'Register'),
+        appBar: _navBar(
+            context, _formType == FormType.login ? 'Login' : 'New User'),
         body: Container(
           child: SafeArea(
             minimum: const EdgeInsets.all(16),
             child: new Form(
-              key: this.formKey,
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: _buildInputs() + _buildFormActions(),
-              ),
-            ),
+                key: this.formKey,
+                child: new Center(
+                  child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: _buildInputs() + _buildFormActions(),
+                  ),
+                )),
           ),
         ),
       ),
@@ -82,6 +93,8 @@ class _LoginPageState extends State<LoginPage> {
 
   List<Widget> _buildInputs() {
     return [
+      new Text(_formType == FormType.login ? 'Login for a great experience.' : 'Create a new account!', style: TextStyle(fontSize: 16),),
+      new SizedBox(height: 20.0),
       new TextFormField(
         decoration: new InputDecoration(labelText: 'Email'),
         validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
@@ -112,7 +125,8 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       return [
         new RaisedButton(
-            child: Text('Create an account', style: new TextStyle(fontSize: 16)),
+            child:
+                Text('Create an account', style: new TextStyle(fontSize: 16)),
             onPressed: validateAndSubmit),
         new SizedBox(height: 20.0),
         new FlatButton(
